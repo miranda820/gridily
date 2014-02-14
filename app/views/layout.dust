@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{title}</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, user-scalable=no" >
+		<link rel="stylesheet" href="/css/font-awesome.css">
+		<link rel='stylesheet' href='/css/main.css' />
+		{+stylesheet}
+		{/stylesheet}
+	</head>
+	<body class="{+bodyClass}{/bodyClass}" data-script="{+bodyClass}{/bodyClass}">
+
+		<div id="control">
+			<div class="note">
+				<span class="logo"><strong>Gridily</strong></span>
+				Firefox<i class="fa fa-check"></i> Chrome<i class="fa fa-check"></i><br/>
+				Device data from <a href="http://viewportsizes.com" target="_blank">viewportsizes.com</a>
+			</div>
+			<div class="grid-options">
+				<form>
+					<label>Total Columns</label>
+					<input id="column" type="number" name="column" value="12"/>
+					<label>Gutter</label>
+					<input id="gutter" type="text" name="gutter" value="10px"/>
+					<label>Page Margin</label>
+					<input id="page-margin" type="text" name="pageMargin" value="1.5%"/>
+				</form>
+				<a id="toggle-grid" class="btn" href="">
+					<i class="fa fa-plus-square"></i>
+					Show Grid
+				</a>
+			</div>
+			<form class="device-size">
+				<label>URL</label>
+				<input id="url" type="text" name="url" value="" placeholder="http://your-site-url"/>
+				<button class="btn" id="enter-url">
+					<i class="fa fa-spinner"></i>
+						Go
+					</button><br/>
+				Set size
+				<input id="device-width" type="number" name="device-width" value="1200"/> X <input id="device-height" type="number" name="device-height" value="800">
+				<button class="btn" id="rotate">
+					<i class="fa fa-retweet"></i>
+						Rotate
+					</button>
+			</form>
+			<nav>
+				Device screen sizes:
+				<ul>
+					<li class="menu" ><i class="fa fa-mobile"></i> Mobile
+						<ul id="mobile-devices">
+							<li><input id="mobile-filter" value="" placeholder="Filter Mobile Devices"/></li>
+							{#mobile}
+							<li class="item" data-width="{Portrait_Width}" data-height="{Landscape_Width}">{Device_Name} <span>|</span> {Portrait_Width} x {Landscape_Width}</li>
+							{/mobile}
+						</ul>
+					</li><li class="menu"><i class="fa fa-tablet"></i> Tablet
+						<ul id="tablet-devices">
+							<li><input id="tablet-filter" value="" placeholder="Filter Tablet Devices"/></li>
+							{#tablet}
+							<li class="item" data-width="{Portrait_Width}" data-height="{Landscape_Width}">{Device_Name} <span>|</span> {Portrait_Width} x {Landscape_Width}</li>
+							{/tablet}
+						</ul>
+					</li><li class="menu"><i class="fa fa-desktop"></i> Desktop
+						<ul>
+							<li class="item" data-width="1280" data-height="1000">Large | 1280 x 1000+</li>
+							<li class="item" data-width="1440" data-height="1000">Jumbo | 1440 x 1000+</li>
+						</ul>
+					</li>
+				</ul>
+			</nav>
+
+			<div class="ruler"></div>
+		</div>
+		<div class="wrapper">
+			<div class="grid hide">
+				<ul>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+					<li></li>
+				</ul>
+			</div>
+			<div id="drag-left">
+				<i class="fa fa-ellipsis-v"></i>
+			</div>
+			{+content}
+			{/content}
+
+				
+		</div>
+		<script>
+			//var mobile = [{#mobile} { 'Device_Name':'{Device_Name}', 'Portrait_Width':'{Portrait_Width}', 'Landscape_Width': '{Landscape_Width}' }{@sep},{/sep}{/mobile}];
+			//var tablet = [{#tablet} { 'Device_Name':'{Device_Name}', 'Portrait_Width':'{Portrait_Width}', 'Landscape_Width': '{Landscape_Width}' }{@sep},{/sep}{/tablet}];
+			
+
+			//console.log(mobile.length, tablet.length);
+		</script>
+
+		<script type="text/javascript" src="/js/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/global.js"></script>
+	</body>
+<!--
+{session}
+-->
+</html>

@@ -1,0 +1,52 @@
+// ---------------------------------------------------------------------------
+// Fonts
+
+$relative-font-sizing: false;
+$base-px: 18;
+$base-font-size: 112.5%; 
+$baseline: 1em;
+
+
+$light: 100;
+$reg: 400;
+$bold: 700;
+
+
+// ---------------------------------------------------------------------------
+// Colors
+$white: #fff;
+$gray: #404040;
+$dark-gray: #3d3d3d;
+$light-gray: #676767;
+$green: #3eb049;
+$dark-green: #318c24;
+$light-green: #5dbe4f;
+$blue: #27446b;
+$teal: #189169;
+
+// ---------------------------------------------------------------------------
+// Default Grid - Desktop
+$content-max-width: 978px;
+$full-bleed: 1200px;
+$full-bleed-number:1200;
+
+$total-columns: 12;
+
+$gutter-width: 32px;
+$inner-padding: 0;
+//$grid-padding: $gutter-width;
+
+$column-width: (100 /$total-columns) * 1%;
+$page-margin: round($gutter-width/$full-bleed) * 100 * 1%;
+
+
+
+
+// ---------------------------------------------------------------------------
+// Breakpoints
+
+$small-screen: small-screen 0 610px;
+$medium-screen: medium-screen 611px 999px;
+$large-screen: large-screen 1000px 1200px;
+
+$fixed-nav: fixed-nav 0 1024px;
