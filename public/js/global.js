@@ -5,7 +5,90 @@ MAIN.views= MAIN.views || {};
 MAIN.utils = MAIN.utils || {};
 MAIN.modules = MAIN.modules || {};
 
+MAIN.utils.getValue = function (thisValue) {
+	var value = thisValue;
 
+	if(value.match(/\d\.?\d*(%|\s*px)?/) && value !== '') {
+		var unit = value.match(/%/)?'%':'px',
+			num = parseFloat(value.replace('px',''));
+		return {
+			num: num,
+			unit: unit
+		}
+	}
+	return null;
+}
+
+MAIN.modules.createGrid = function (options) {
+		var $grid = $('.grid'),
+			canvas = options.canvas;
+
+		function getStyle (el,pseudo, property) {
+			return window.getComputedStyle(el,pseudo).getPropertyValue(property);
+		}
+	
+		var columnSetup = {
+			pageMargin : getStyle($grid.find('ul')[0], null, 'margin-left'), 
+			halfGuter : getStyle($grid.find('ul li')[0], null, 'padding-left'),
+			columnWidth : getStyle($grid.find('ul li')[0],null, 'width')
+		};
+		//update each field with number
+		for(size in columnSetup) {
+			if(columnSetup.hasOwnProperty(size)) {
+				if (columnSetup[size].match('px')) {
+					columnSetup[size] = parseFloat(columnSetup[size]);
+				} else {
+					if (size === 'columnWidth' && columnSetup.pageMargin ){
+						columnSetup[size] = (parseFloat(canvas.width) - 2 * columnSetup.pageMargin )* Math.round(parseFloat(columnSetup[size])*100)/10000;
+					} else {
+						columnSetup[size] = parseFloat(canvas.width) * Math.round(parseFloat(columnSetup[size])*100)/10000;
+					}
+				}
+			}
+		}
+	//create grid on canvas	
+	if (canvas.getContext) {
+		var ctx = canvas.getContext('2d');
+
+		ctx.clearRect (0, 0, canvas.width, canvas.height);
+
+		ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+		ctx.fillRect (0, 0, canvas.width, canvas.height);
+
+		//create gutter and column
+		function halfGutter (options) {
+			ctx.fillStyle = 'rgba(0, 10, 255, .15)';
+			ctx.fillRect (options.x, 0, options.width, canvas.height);				
+		}
+
+		function column (options) {
+			ctx.fillStyle = 'rgba(255, 0, 0, 0.45)';
+			ctx.fillRect (options.x, 0, options.width, canvas.height);		
+		}
+
+		var totalColumn =  options.totalColumn;
+
+		for (var i = 0; i < totalColumn; i++) {
+			halfGutter({
+				x : columnSetup.pageMargin + i * columnSetup.columnWidth,
+				width: columnSetup.halfGuter
+			})
+
+			column({
+				x: columnSetup.pageMargin + columnSetup.halfGuter + i * columnSetup.columnWidth,
+				width: columnSetup.columnWidth - 2 * columnSetup.halfGuter
+			})
+
+			halfGutter({
+				x : columnSetup.pageMargin + columnSetup.columnWidth - columnSetup.halfGuter + i * columnSetup.columnWidth,
+				width: columnSetup.halfGuter
+			})
+		}
+
+		return canvas.toDataURL("image/png");
+
+	}
+}
 
 
 /* HOME CONTROLLER */
@@ -13,21 +96,21 @@ MAIN.views.home = function ( $, undefined ) {
 	var instance = null;
 
 	var $wrapper = $('.wrapper'),
+		canvas = document.getElementById('create-grid'),
+		columnInput = document.getElementById('column'),
+		gutterInput = document.getElementById('gutter'),
+		pageMargin = document.getElementById('page-margin'),
+		deviceHeight = document.getElementById('device-height'),
+		deviceWidth = document.getElementById('device-width'),
+		url = document.getElementById('url'),
 		$iframe = $('iframe'),
-		$grid = $('.grid'),
-		$gridUl = $grid.find('ul'),
-		$control = $('#control'),
-		$column = $('#column'),
-		$gutter = $('#gutter'),
-	 	$pageMargin = $('#page-margin'),
-		$url = $('#url'),
-		$deviceHeight = $('#device-height'),
-		$deviceWidth = $('#device-width');
+		$gridUl = $('.grid ul');
 
 
 
 	function updateGrid() {
-		/*$column.on('keyup', function (e) {
+
+		columnInput.oninput = function (e) {
 			if(this.value.match(/[0-9]+/) && this.value !== 0) {
 				var columnNum = this.value,
 					markup ='';
@@ -38,114 +121,64 @@ MAIN.views.home = function ( $, undefined ) {
 					width : 100/columnNum + '%'
 				})
 				$gridUl.html(columns);
-				
-			}
-
-			return
-		})*/
-
-
-		$column[0].oninput = function (e) {
-			if(this.value.match(/[0-9]+/) && this.value !== 0) {
-				var columnNum = this.value,
-					markup ='';
-				for (var i = 0; i < columnNum; i ++) {
-					markup += '<li></li>';
-				}
-				var columns = $(markup).css({
-					width : 100/columnNum + '%'
-				})
-				$gridUl.html(columns);
-				
 			}
 
 			return
 		}
 
-		function getValue (thisValue) {
-			var value = thisValue;
-			if(value.match(/\d\.?\d*(%|\s*px)?/) && value !== '') {
-				var unit = value.match(/%/)?'%':'px',
-					gutterNum = parseFloat(value.replace('px',''));
-
-				console.log(value, gutterNum, unit);
-				return {
-					gutterNum: gutterNum,
-					unit: unit
-				}
-			}
-
-			return null;
-		}
-
-		$gutter[0].oninput = function (e) {
-			var value = getValue(this.value);
+		gutterInput.oninput = function (e) {
+			var value = MAIN.utils.getValue(this.value);
 			if(value) {
 				$gridUl.find('li').css({
-					'padding' :'0 ' + value.gutterNum/2 + value.unit
+					'padding' :'0 ' + value.num/2 + value.unit
 				})
 			}
 		};
 
-		$pageMargin[0].oninput = function (e) {
-			var value = getValue(this.value);
+		pageMargin.oninput = function (e) {
+			var value = MAIN.utils.getValue(this.value);
 			if(value) {
 				$gridUl.css({
-					'margin' :'0 ' + value.gutterNum + value.unit
+					'margin' :'0 ' + value.num + value.unit
 				})
 			}
 		};
 	}
 
 	function updateURL() {
+
 		function setURL (value) {
 			if(value.match(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/)){
-
-					$('iframe')[0].src = value;
-				}
+				$('iframe')[0].src = value;
+			}
 		}
-
-		$url.on('keyup',function (e) {
+		$(url).on('keyup', function (e) {
 			console.log(e);
 			if(e.keyCode === 13) {
 				setURL(this.value);
 			}
-		})
+		});
 
 		$('#enter-url').on('click', function (e) {
 			e.preventDefault();
-			setURL($url[0].value);
+			setURL(url.value);
 		})
 	}
 
 	function updateWindowSize( screenWidth, screenHeight) {
-		if(screenWidth && screenHeight) {
 			$wrapper.css({
 				width: screenWidth,
 				height: screenHeight
 			})
 
-			$deviceHeight[0].value = screenHeight;
-			$deviceWidth[0].value = screenWidth;
-		}
-		if(screenWidth) {
-			$wrapper.css({
-				width: screenWidth
-			})
-			$deviceWidth[0].value = screenWidth;
-		}
-		if(screenHeight) {
-			$wrapper.css({
-				height: screenHeight
-			})
+			canvas.width = screenWidth;
+			canvas.height = screenHeight;
 
-			$deviceHeight[0].value = screenHeight;
-		}
-			
+			deviceHeight.value = screenHeight;
+			deviceWidth.value = screenWidth;
 	}
 
 	function filterDevice (elements, value) {
-		console.log( value);
 		elements.each(function(i) {
 			
 			var text = this.innerHTML.toLowerCase(),
@@ -159,11 +192,13 @@ MAIN.views.home = function ( $, undefined ) {
 	}
 
 	function resizeViewport () {
+
 		function OnMouseMove (e) {
 
 			console.log(e, e.pageX);
 			$wrapper[0].style.width = e.pageX - 10 + 'px';
-			$deviceWidth[0].value = e.pageX - 10;
+			canvas.width = e.pageX - 10;
+			deviceWidth.value = e.pageX - 10;
 
 		}
 
@@ -194,25 +229,25 @@ MAIN.views.home = function ( $, undefined ) {
 			filterDevice($tabletDevices, e.target.value.toLowerCase());
 		};
 
-		$deviceWidth.on('keyup', function (e) {
+		$(deviceWidth).on('keyup', function (e) {
 			if(this.value!== '') {
-				updateWindowSize(this.value, null)
+				updateWindowSize(this.value, deviceHeight.value)
 			}
 				
 		})
 
-		$deviceHeight.on('keyup', function (e) {
+		$(deviceHeight).on('keyup', function (e) {
 			if(this.value!== '') {
-				updateWindowSize(null, this.value)
+				updateWindowSize(deviceWidth.value, this.value)
 			}
 		})
 
 		$('#rotate').on('click', function(e) {
 			e.preventDefault();
-			updateWindowSize($deviceHeight[0].value, $deviceWidth[0].value);
+			updateWindowSize(deviceHeight.value, deviceWidth.value);
 		})
 
-		var showGrid = true;
+		var showGrid = false;
 		$('#toggle-grid').on('click', function(e){
 			e.preventDefault();
 			if(!showGrid) {
@@ -227,6 +262,9 @@ MAIN.views.home = function ( $, undefined ) {
 		$('.item').on('click', function () {
 			var screenWidth = $(this).data('width'),
 				screenHeight = $(this).data('height');
+
+			screenWidth = (screenWidth !== '')? screenWidth : 1200;
+			screenHeight = (screenHeight !== '')? screenHeight : 1200;
 			$(this).closest('.menu').addClass('hide');
 			updateWindowSize(screenWidth, screenHeight)
 		})
@@ -234,16 +272,26 @@ MAIN.views.home = function ( $, undefined ) {
 		$('.menu').mouseenter(function (e) {
 			$(this).removeClass('hide');
 		})
-
 	}
 
 	function construct( ) {
 
 		updateGrid();
 		updateURL();
-		updateWindowSize();
 		resizeViewport ();
 		controlPanel ();
+
+		$('#download-image').on('click', function (e) {
+			e.preventDefault();
+
+			var dataURl = MAIN.modules.createGrid({
+				canvas: canvas,
+				totalColumn: columnInput.value
+			});
+			
+			var openWindow = window.open("","","width=1200,height=1200");
+			openWindow.document.write('<image src="'+ dataURl +'" download="grid.png"/>');
+		})
 
 	}
 

@@ -14,8 +14,11 @@
 		<div id="control">
 			<div class="note">
 				<span class="logo"><strong>Gridily</strong></span>
-				Firefox<i class="fa fa-check"></i> Chrome<i class="fa fa-check"></i><br/>
-				Device data from <a href="http://viewportsizes.com" target="_blank">viewportsizes.com</a>
+
+				<div class="credit">
+					Firefox<i class="fa fa-check"></i> Chrome<i class="fa fa-check"></i><br/>
+					Device data from <a href="http://viewportsizes.com" target="_blank">viewportsizes.com</a>
+				</div>
 			</div>
 			<div class="grid-options">
 				<form>
@@ -29,6 +32,11 @@
 				<a id="toggle-grid" class="btn" href="">
 					<i class="fa fa-plus-square"></i>
 					Show Grid
+				</a>
+
+				<a id="download-image"  class="btn" href="" download="grid.png">
+					<i class="fa fa-cloud-download"></i>
+					Download Grid
 				</a>
 			</div>
 			<form class="device-size">
@@ -96,15 +104,11 @@
 			{+content}
 			{/content}
 
-				
 		</div>
-		<script>
-			//var mobile = [{#mobile} { 'Device_Name':'{Device_Name}', 'Portrait_Width':'{Portrait_Width}', 'Landscape_Width': '{Landscape_Width}' }{@sep},{/sep}{/mobile}];
-			//var tablet = [{#tablet} { 'Device_Name':'{Device_Name}', 'Portrait_Width':'{Portrait_Width}', 'Landscape_Width': '{Landscape_Width}' }{@sep},{/sep}{/tablet}];
+		<canvas id="create-grid" width="1200" height="1200">
 			
+		</canvas>
 
-			//console.log(mobile.length, tablet.length);
-		</script>
 
 		<script type="text/javascript" src="/js/jquery.min.js"></script>
 		<script type="text/javascript" src="/js/global.js"></script>
