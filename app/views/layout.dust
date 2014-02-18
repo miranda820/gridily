@@ -16,7 +16,7 @@
 				<span class="logo"><strong>Gridily</strong></span>
 
 				<div class="credit">
-					Firefox<i class="fa fa-check"></i> Chrome<i class="fa fa-check"></i><a class="fa fa-info-circle" href="https://github.com/miranda820/gridily" target="_blank"></a><br/>
+					Firefox<i class="fa fa-check"></i> Chrome<i class="fa fa-check"></i> <a class="fa fa-github-alt" href="https://github.com/miranda820/gridily" target="_blank"></a><br/>
 					Device data from <a href="http://viewportsizes.com" target="_blank">viewportsizes.com</a>
 				</div>
 			</div>
