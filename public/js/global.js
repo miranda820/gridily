@@ -276,6 +276,8 @@ MAIN.views.home = function ( $, undefined ) {
 
 	function construct( ) {
 
+		console.log(calculateOriginal('400px', '6', '20px', '20px'));
+
 		updateGrid();
 		updateURL();
 		resizeViewport ();
@@ -292,9 +294,42 @@ MAIN.views.home = function ( $, undefined ) {
 			var openWindow = window.open("","","width=1200,height=1200");
 			openWindow.document.write('<image src="'+ dataURl +'" download="grid.png"/>');
 		})
-
 	}
 
+	function calculateOriginal(baseWidth, totalColumns, gutterWidth, gridPadding) {
+		var error = {},
+			origGrid = {};
+
+		var PXUNIT = 'px';
+
+		for (var i = 0; i < arguments.length; i++) {
+
+			if (MAIN.utils.getValue(arguments[i]).unit !== PXUNIT) {
+				error.index = i;
+				error.message = 'Value ' + arguments[i] + ' needs to be in ' + PXUNIT;
+				
+				console.log(error);
+				alert(error.message);
+
+				return error;
+			} else {
+				arguments[i] = parseInt(arguments[i], 10);
+			}
+		}
+
+		var totalGutterWidth = gutterWidth * (totalColumns - 1), // the last column has no right gutter (ie omega)
+			totalGriddPaddingWidth = gridPadding * 2;
+
+		origGrid.totalColumns = totalColumns;
+
+		// What is used in _mixins, everything else is derived from these 4 
+		origGrid.baseWidth = baseWidth + PXUNIT;
+		origGrid.colWidth = ((baseWidth - totalGutterWidth - totalGriddPaddingWidth) / totalColumns) + PXUNIT;
+		origGrid.gutterWidth = gutterWidth + PXUNIT;
+		origGrid.gridPadding = gridPadding + PXUNIT;
+
+		return origGrid;
+	}
 
 	return {
 		Init: construct
